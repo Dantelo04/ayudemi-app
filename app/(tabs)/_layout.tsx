@@ -39,8 +39,7 @@ const TabsLayout = () => {
           backgroundColor: ColorStyles.white,
           borderTopColor: 'transparent',
           shadowColor: 'transparent',
-          display: 'flex',
-          justifyContent: 'center',
+          justifyContent: 'space-between',
           alignItems: 'center',
           borderTopWidth: 0,
           shadowOpacity: 0,
@@ -69,7 +68,7 @@ const TabsLayout = () => {
           tabBarIcon: ({focused}) => (
             <TabIcon 
               color={focused ? ColorStyles.selectedBlack : ColorStyles.unselectedGray}
-              name='Buscar'
+              name='Explorar'
               focused={focused}
             >
               <Discovery width={28} height={28} 

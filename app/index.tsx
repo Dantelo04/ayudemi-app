@@ -1,8 +1,8 @@
 import Button from "@/components/Button";
 import { ColorStyles } from "@/styles/ColorStyles";
-import { TextBold, TextMedium, Title } from "@/styles/TextStyles";
+import { Title } from "@/styles/TextStyles";
 import { router } from "expo-router";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { StatusBar } from 'expo-status-bar'
 import { SafeAreaView } from "react-native-safe-area-context";
 
