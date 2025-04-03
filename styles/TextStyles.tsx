@@ -62,3 +62,4 @@ export const TextLink = ({children, size, color}: TextBoldProps) => {
 } 
 
 
+

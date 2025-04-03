@@ -37,14 +37,14 @@ const TabsLayout = () => {
       <Tabs screenOptions={{
         tabBarStyle:{
           backgroundColor: ColorStyles.white,
-          borderTopColor: 'transparent',
-          shadowColor: 'transparent',
+          borderTopColor: ColorStyles.border,
+          shadowColor: ColorStyles.border,
           justifyContent: 'space-between',
           alignItems: 'center',
-          borderTopWidth: 0,
-          shadowOpacity: 0,
+          borderTopWidth: 1,
+          shadowOpacity: 0.45,
           elevation: 0,
-          paddingTop: 18,
+          paddingTop: 20,
           height: 64,
         }
       }}>

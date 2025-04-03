@@ -1,0 +1,71 @@
+name: Auth CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Zig
+        uses: marktiedemann/zig-action@v1
+        with:
+          version: 0.13.0
+
+      - name: Build the project
+        run: zig build
+
+      - name: Run tests
+        run: zig test
+
+  publish:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [build]
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Extract tag name
+        if: startsWith(github.ref, 'refs/tags/')
+        id: get_tag
+        run: echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Build Docker Image
+        run: |
+          docker build -t ayudemi/auth:${{ github.sha }} .
+          docker tag ayudemi/auth:${{ github.sha }} ayudemi/auth:${{ steps.get_tag.outputs.tag }}
+          docker tag ayudemi/auth:${{ github.sha }} ayudemi/auth:latest
+
+      - name: Login to Docker Hub
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Push Docker Image
+        run: |
+          docker push ayudemi/auth:${{ steps.get_tag.outputs.tag }}
+          docker push ayudemi/auth:latest
+          docker push ayudemi/auth:${{ github.sha }}
+
+      - name: Change in infrastructure
+        run: |
+          set -e
+          git clone https://github.com/Ayudemi/cloud-infrastructure
+          cd cloud-infrastructure
+          yq -i '.spec.template.spec.containers[0].image = "ayudemi/auth:${{ github.event.release.tag_name }}"' k8s/auth.app.yaml
+          git config --global user.email "bot@ayudemi.com.py"
+          git config --global user.name "Ayudemi-Bot"
+          git add k8s/auth.app.yaml
+          git commit -m "Update application version to ${{ github.event.release.tag_name }}"
+          git push origin main
+
